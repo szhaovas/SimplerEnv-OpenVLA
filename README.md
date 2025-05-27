@@ -30,6 +30,15 @@ We hope that our work guides and inspires future real-to-sim evaluation efforts.
   - [Troubleshooting](#troubleshooting)
   - [Citation](#citation)
 
+## Benchmark @ GoogleSheets
+> [!TIP]
+> We maintain a public Google Sheets documenting the latest SOTA models' performance and fine-tuned weights on Simpler-Env, making community benchmarking more accessible. Welcome to contribute and update!
+>
+> [simpler env benchmark @ GoogleSheets 📊](https://docs.google.com/spreadsheets/d/1cLhEW9QnVkP4rqxsFVzdBVRyBWVdSm0d5zp1L_-QJx4/edit?usp=sharing)
+<img width="1789" alt="image" src="https://github.com/user-attachments/assets/68e2ad3d-b24f-4562-97d9-434f23cede86" />
+
+
+
 ## Models
 > [!NOTE]
 > Hello everyone!
@@ -53,9 +62,6 @@ We hope that our work guides and inspires future real-to-sim evaluation efforts.
 | Pi0/Pi0-Fast (lerobot version)     | ✅ | [lerobot](https://github.com/huggingface/lerobot) |
 | GR00T     | ✅ | [Isaac-GR00T](https://github.com/NVIDIA/Isaac-GR00T) |
 
-> [!TIP]
-> We maintain a public Google Sheets documenting the latest SOTA models' performance and fine-tuned weights on Simpler-Env, making community benchmarking more accessible. Welcome to contribute and update!
-> [simpler env benchmark @ GoogleSheets 📊](https://docs.google.com/spreadsheets/d/1cLhEW9QnVkP4rqxsFVzdBVRyBWVdSm0d5zp1L_-QJx4/edit?usp=sharing)
 
 ## Getting Started
 
