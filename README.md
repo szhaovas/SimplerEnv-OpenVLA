@@ -53,7 +53,9 @@ We hope that our work guides and inspires future real-to-sim evaluation efforts.
 | Pi0/Pi0-Fast (lerobot version)     | ✅ | [lerobot](https://github.com/huggingface/lerobot) |
 | GR00T     | ✅ | [Isaac-GR00T](https://github.com/NVIDIA/Isaac-GR00T) |
 
-
+> [!TIP]
+> We maintain a public Google Sheets documenting the latest SOTA models' performance and fine-tuned weights on Simpler-Env, making community benchmarking more accessible. Welcome to contribute and update!
+> [simpler env benchmark @ GoogleSheets 📊](https://docs.google.com/spreadsheets/d/1cLhEW9QnVkP4rqxsFVzdBVRyBWVdSm0d5zp1L_-QJx4/edit?usp=sharing)
 
 ## Getting Started
 
@@ -102,7 +104,7 @@ conda activate simpler_env
 
 Clone this repo:
 ```
-git clone https://github.com/simpler-env/SimplerEnv --recurse-submodules
+git clone https://github.com/simpler-env/SimplerEnv --recurse-submodules --depth 1
 ```
 
 Install numpy<2.0 (otherwise errors in IK might occur in pinocchio):
