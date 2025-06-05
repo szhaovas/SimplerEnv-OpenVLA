@@ -38,7 +38,7 @@ class OpenVLAInference:
         print(f"*** policy_setup: {policy_setup}, unnorm_key: {unnorm_key} ***")
         self.processor = AutoProcessor.from_pretrained(saved_model_path, trust_remote_code=True)
         self.vla = AutoModelForVision2Seq.from_pretrained(
-            "openvla/openvla-7b",
+            saved_model_path,
             attn_implementation="flash_attention_2",  # [Optional] Requires `flash_attn`
             torch_dtype=torch.bfloat16,
             low_cpu_mem_usage=True,
