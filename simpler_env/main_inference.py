@@ -81,7 +81,7 @@ if __name__ == "__main__":
     elif args.policy_model == "openpifast":
         assert args.ckpt_path is not None
         from simpler_env.policies.openpi.pi0_or_fast import OpenPiFastInference
-        model = Pi0Inference(
+        model = OpenPiFastInference(
             saved_model_path=args.ckpt_path,
             policy_setup=args.policy_setup,
             action_scale=args.action_scale,
