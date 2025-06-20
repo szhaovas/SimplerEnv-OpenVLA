@@ -118,7 +118,7 @@ class Gr00tInference:
         )
         return raw_proprio
 
-    def preprocess_googple_robot_proprio(self, eef_pos) -> np.array:
+    def preprocess_google_robot_proprio(self, eef_pos) -> np.array:
         """convert wxyz quat from simpler to xyzw used in fractal
         https://github.com/allenzren/open-pi-zero/blob/c3df7fb062175c16f69d7ca4ce042958ea238fb7/src/agent/env_adapter/simpler.py#L204
         """
@@ -192,7 +192,7 @@ class Gr00tInference:
             ], axis=-1)[:self.pred_action_horizon]
 
         elif self.policy_setup == "google_robot":
-            state = self.preprocess_googple_robot_proprio(eef_pos)
+            state = self.preprocess_google_robot_proprio(eef_pos)
             batch = {
                 "video.image": np.array(images[0][None]),
                 "state.x": state[0:1][None],

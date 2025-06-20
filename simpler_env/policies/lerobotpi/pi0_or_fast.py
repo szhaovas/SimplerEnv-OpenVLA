@@ -23,7 +23,7 @@ class LerobotPiFastInference:
         saved_model_path: str = "pretrained/pi0",
         unnorm_key: Optional[str] = None,
         policy_setup: str = "widowx_bridge",
-        exec_horizon: int = 1,
+        exec_horizon: int = 4,
         image_size: list[int] = [224, 224],
         action_scale: float = 1.0,
         action_ensemble_temp: float = -0.8,
@@ -92,8 +92,7 @@ class LerobotPiFastInference:
         self.gripper_action_repeat = 0
         self.sticky_gripper_action = 0.0
         self.previous_gripper_action = None
-
-        self.vla.reset()
+        self.action_plan = deque()
 
     def preprocess_widowx_proprio(self, eef_pos) -> np.array:
         """convert ee rotation to the frame of top-down
@@ -114,7 +113,7 @@ class LerobotPiFastInference:
         )
         return raw_proprio
 
-    def preprocess_googple_robot_proprio(self, eef_pos) -> np.array:
+    def preprocess_google_robot_proprio(self, eef_pos) -> np.array:
         """convert wxyz quat from simpler to xyzw used in fractal
         https://github.com/allenzren/open-pi-zero/blob/c3df7fb062175c16f69d7ca4ce042958ea238fb7/src/agent/env_adapter/simpler.py#L204
         """
@@ -165,26 +164,30 @@ class LerobotPiFastInference:
             state = self.preprocess_widowx_proprio(eef_pos)
             image_key = "observation.images.image_0"
         elif self.policy_setup == "google_robot":
-            state = self.preprocess_googple_robot_proprio(eef_pos)
+            state = self.preprocess_google_robot_proprio(eef_pos)
             image_key = "observation.images.image"
-        
-        observation = {
-            "observation.state": torch.from_numpy(state).unsqueeze(0).to(self.device).float(),
-            image_key: torch.from_numpy(images[0] / 255).permute(2, 0, 1).unsqueeze(0).to(self.device).float(),
-            "task": [task_description], 
-        }
 
-        # model output gripper action, +1 = open, 0 = close
-        raw_actions = self.vla.select_action(observation)[0][:self.pred_action_horizon].cpu().numpy()
+        # if self.action_ensemble:
+        #     raw_actions = self.action_ensembler.ensemble_action(raw_actions)[None]
 
-        if self.action_ensemble:
-            raw_actions = self.action_ensembler.ensemble_action(raw_actions)[None]
+        if not self.action_plan:
+            observation = {
+                "observation.state": torch.from_numpy(state).unsqueeze(0).to(self.device).float(),
+                image_key: torch.from_numpy(images[0] / 255).permute(2, 0, 1).unsqueeze(0).to(self.device).float(),
+                "task": [task_description], 
+            }
+
+            # model output gripper action, +1 = open, 0 = close
+            action_chunk = self.vla.select_action(observation)[0][:self.pred_action_horizon].cpu().numpy()
+            self.action_plan.extend(action_chunk[: self.exec_horizon])
+
+        raw_actions = self.action_plan.popleft()
 
         raw_action = {
-            "world_vector": np.array(raw_actions[0, :3]),
-            "rotation_delta": np.array(raw_actions[0, 3:6]),
+            "world_vector": np.array(raw_actions[:3]),
+            "rotation_delta": np.array(raw_actions[3:6]),
             "open_gripper": np.array(
-                raw_actions[0, 6:7]
+                raw_actions[6:7]
             ),  # range [0, 1]; 1 = open; 0 = close
         }
 
