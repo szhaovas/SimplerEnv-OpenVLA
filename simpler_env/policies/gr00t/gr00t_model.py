@@ -98,6 +98,7 @@ class Gr00tInference:
         self.gripper_action_repeat = 0
         self.sticky_gripper_action = 0.0
         self.previous_gripper_action = None
+        self.action_plan = deque()
 
     def preprocess_widowx_proprio(self, eef_pos) -> np.array:
         """convert ee rotation to the frame of top-down
@@ -179,17 +180,18 @@ class Gr00tInference:
                 "state.gripper": state[7:8][None],
                 "annotation.human.action.task_description": [task_description],
             }
-
-            actions = self.policy_client.get_action(batch)
-            raw_actions = np.stack([
-                actions["action.x"],
-                actions["action.y"],
-                actions["action.z"],
-                actions["action.roll"],
-                actions["action.pitch"],
-                actions["action.yaw"],
-                actions["action.gripper"],
-            ], axis=-1)[:self.pred_action_horizon]
+            if not self.action_plan:
+                actions = self.policy_client.get_action(batch)
+                action_chunk = np.stack([
+                    actions["action.x"],
+                    actions["action.y"],
+                    actions["action.z"],
+                    actions["action.roll"],
+                    actions["action.pitch"],
+                    actions["action.yaw"],
+                    actions["action.gripper"],
+                ], axis=-1)[:self.pred_action_horizon]
+                self.action_plan.extend(action_chunk)
 
         elif self.policy_setup == "google_robot":
             state = self.preprocess_google_robot_proprio(eef_pos)
@@ -206,26 +208,30 @@ class Gr00tInference:
                 "annotation.human.action.task_description": [task_description],
             }
 
-            actions = self.policy_client.get_action(batch)
-            raw_actions = np.stack([
-                actions["action.x"],
-                actions["action.y"],
-                actions["action.z"],
-                actions["action.roll"],
-                actions["action.pitch"],
-                actions["action.yaw"],
-                actions["action.gripper"],
-            ], axis=-1)[:self.pred_action_horizon]
+            if not self.action_plan:
+                actions = self.policy_client.get_action(batch)
+                raw_actions = np.stack([
+                    actions["action.x"],
+                    actions["action.y"],
+                    actions["action.z"],
+                    actions["action.roll"],
+                    actions["action.pitch"],
+                    actions["action.yaw"],
+                    actions["action.gripper"],
+                ], axis=-1)[:self.pred_action_horizon]
+                self.action_plan.extend(raw_actions)
+            
+        raw_actions = self.action_plan.popleft()
 
 
-        if self.action_ensemble:
-            raw_actions = self.action_ensembler.ensemble_action(raw_actions)[None]
+        # if self.action_ensemble:
+        #     raw_actions = self.action_ensembler.ensemble_action(raw_actions)[None]
 
         raw_action = {
-            "world_vector": np.array(raw_actions[0, :3]),
-            "rotation_delta": np.array(raw_actions[0, 3:6]),
+            "world_vector": np.array(raw_actions[:3]),
+            "rotation_delta": np.array(raw_actions[3:6]),
             "open_gripper": np.array(
-                raw_actions[0, 6:7]
+                raw_actions[6:7]
             ),  # range [0, 1]; 1 = open; 0 = close
         }
 
