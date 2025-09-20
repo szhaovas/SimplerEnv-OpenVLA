@@ -6,6 +6,8 @@ import tensorflow as tf
 from simpler_env.evaluation.argparse import get_args
 from simpler_env.evaluation.maniskill2_evaluator import maniskill2_evaluator
 
+from datetime import datetime
+
 try:
     from simpler_env.policies.octo.octo_model import OctoInference
 except ImportError as e:
@@ -109,3 +111,12 @@ if __name__ == "__main__":
     success_arr = maniskill2_evaluator(model, args)
     print(args)
     print(" " * 10, "Average success", np.mean(success_arr))
+    with open('success.txt', "a") as f:
+        logtext = f"""
+{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: 
+    Checkpoint: {args.ckpt_path}
+    Environment: {args.env_name}
+    Instruction: {args.instruction if 'instruction' in args else 'default'}
+    Success rate: {np.mean(success_arr)}
+"""
+        f.write(logtext)

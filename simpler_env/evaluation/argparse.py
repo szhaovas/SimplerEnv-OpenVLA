@@ -112,6 +112,7 @@ def get_args():
     parser.add_argument("--logging-dir", type=str, default="./results")
     parser.add_argument("--tf-memory-limit", type=int, default=3072, help="Tensorflow memory limit")
     parser.add_argument("--octo-init-rng", type=int, default=0, help="Octo init rng seed")
+    parser.add_argument("--instruction", type=str, default=None, help="Language instruction for task")
 
     args = parser.parse_args()
 
