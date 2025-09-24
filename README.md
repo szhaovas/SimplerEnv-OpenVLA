@@ -25,5 +25,5 @@ pip install tensorflow[and-cuda]==2.15.1 # tensorflow gpu support
 pip install git+https://github.com/nathanrooy/simulated-annealing
 pip install torch==2.2.0 torchvision==0.17.0 timm==0.9.10 tokenizers==0.19.1 accelerate==0.32.1
 pip install flash-attn==2.6.1 --no-build-isolation
-pip install --upgrade tensorflow-graphics json-numpy==2.1.1 draccus==0.11.5 jsonlines==4.0.0 diffusers==0.35.1 transformers==4.40.1
+pip install --upgrade tensorflow-graphics json-numpy==2.1.1 draccus==0.11.5 jsonlines==4.0.0 diffusers==0.35.1 transformers==4.40.1 gymnasium==0.28.1
 ```
